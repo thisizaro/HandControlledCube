@@ -26,6 +26,11 @@ def handLandmarks(colorImg):
 # Get the width and height of the camera feed
 w, h = int(cap.get(3)), int(cap.get(4))
 
+prev_position = None
+
+deviation_X = 0
+deviation_Y = 0
+
 while True:
     check, img = cap.read()
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -40,11 +45,14 @@ while True:
     if len(lmList) != 0:
         meanX = lmList[0][1]
         meanY = lmList[0][2]
-    #     for landmark in lmList:
-    #         meanX += landmark[1]
-    #         meanY += landmark[2]
-    #     meanX /= len(lmList)
-    #     meanY /= len(lmList)
+
+    # Calculate deviation if previous position is not None
+    if prev_position is not None:
+        deviation_X = meanX - prev_position[0]
+        deviation_Y = meanY - prev_position[1]
+
+    # Update previous position
+    prev_position = (meanX, meanY)
 
     # Calculate the angle of the position vector with respect to the center of the screen
     
@@ -53,11 +61,17 @@ while True:
     angle_x = numpy.cos(angle)
     angle_y = numpy.sin(angle)
     # Print the angle
-    print("Angle:", angle)
+    print("Angle:", angle, " Deviation X:", deviation_X, " Deviation Y:", deviation_Y, " Angle X:", angle_x, " Angle Y:", angle_y)
 
     # Save angle in a JSON file
     with open("angle.json", "w") as file:
-        json.dump({"angle_x": angle_x, "angle_y": angle_y}, file)
+        json.dump(
+            {
+                "angle_x": angle_x, 
+                "angle_y": angle_y, 
+                "deviation_x": deviation_X, 
+                "deviation_y": deviation_Y 
+            }, file)
 
     if lmList:
         # print(lmList)

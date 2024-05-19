@@ -81,12 +81,12 @@ while True:
         try:
             with open("angle.json", "r") as file:
                 data = json.load(file)
-                r_x = data["angle_x"]
-                r_y = data["angle_y"]
+                r_x = data["deviation_y"]
+                r_y = data["deviation_x"]
         except: pass
 
-        angle_x += r_x * 0.01
-        angle_y += r_y * 0.01
+        angle_x += r_x * 0.001
+        angle_y += r_y * 0.001
 
         pygame.draw.circle(window, (255, 0, 0), (x, y), 5)
 
