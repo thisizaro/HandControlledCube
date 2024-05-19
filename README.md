@@ -1,4 +1,4 @@
-**HandControlledCube**
+# **HandControlledCube**
 
 Welcome to HandControlledCube! This repository contains code for a simple 3D cube visualization using Pygame, with the ability to control the rotation of the cube using hand gestures detected by a separate module.
 
