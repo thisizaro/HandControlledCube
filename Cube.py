@@ -1,6 +1,10 @@
 import pygame
 from math import *
 import json
+import CordReader1
+import threading
+
+pygame.init()  
 
 WINDOW_SIZE =  800
 ROTATE_SPEED = 0.05
@@ -45,85 +49,93 @@ def connect_points(i, j, points):
     pygame.draw.line(window, (255, 255, 255), (points[i][0], points[i][1]) , (points[j][0], points[j][1]))
 
 # Main Loop
-scale = 100
-angle_x = angle_y = angle_z = 0
-while True:
-    clock.tick(60)
-    window.fill((0,0,0))
-    rotation_x = [[1, 0, 0],
-                    [0, cos(angle_x), -sin(angle_x)],
-                    [0, sin(angle_x), cos(angle_x)]]
+def CubeMain():
+    scale = 100
+    angle_x = angle_y = angle_z = 0
+    while True:
+        clock.tick(60)
+        window.fill((0,0,0))
+        rotation_x = [[1, 0, 0],
+                        [0, cos(angle_x), -sin(angle_x)],
+                        [0, sin(angle_x), cos(angle_x)]]
 
-    rotation_y = [[cos(angle_y), 0, sin(angle_y)],
-                    [0, 1, 0],
-                    [-sin(angle_y), 0, cos(angle_y)]]
+        rotation_y = [[cos(angle_y), 0, sin(angle_y)],
+                        [0, 1, 0],
+                        [-sin(angle_y), 0, cos(angle_y)]]
 
-    rotation_z = [[cos(angle_z), -sin(angle_z), 0],
-                    [sin(angle_z), cos(angle_z), 0],
-                    [0, 0, 1]]
+        rotation_z = [[cos(angle_z), -sin(angle_z), 0],
+                        [sin(angle_z), cos(angle_z), 0],
+                        [0, 0, 1]]
 
-    points = [0 for _ in range(len(cube_points))]
-    i = 0
-    for point in cube_points:
-        rotate_x = multiply_m(rotation_x, point)
-        rotate_y = multiply_m(rotation_y, rotate_x)
-        rotate_z = multiply_m(rotation_z, rotate_y)
-        point_2d = multiply_m(projection_matrix, rotate_z)
-    
-        x = (point_2d[0][0] * scale) + WINDOW_SIZE/2
-        y = (point_2d[1][0] * scale) + WINDOW_SIZE/2
-
-        points[i] = (x,y)
-        i += 1
-
-        r_x = 0
-        r_y = 0
-        try:
-            with open("angle.json", "r") as file:
-                data = json.load(file)
-                r_x = data["deviation_y"]
-                r_y = data["deviation_x"]
-        except: pass
-
-        angle_x += r_x * 0.001
-        angle_y += r_y * 0.001
-
-        pygame.draw.circle(window, (255, 0, 0), (x, y), 5)
-
-    connect_points(0, 1, points)
-    connect_points(0, 3, points)
-    connect_points(0, 4, points)
-    connect_points(1, 2, points)
-    connect_points(1, 5, points)
-    connect_points(2, 6, points)
-    connect_points(2, 3, points)
-    connect_points(3, 7, points)
-    connect_points(4, 5, points)
-    connect_points(4, 7, points)
-    connect_points(6, 5, points)
-    connect_points(6, 7, points)
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-
-        # Retriving angle_x and angle_y from the JSON file
+        points = [0 for _ in range(len(cube_points))]
+        i = 0
+        for point in cube_points:
+            rotate_x = multiply_m(rotation_x, point)
+            rotate_y = multiply_m(rotation_y, rotate_x)
+            rotate_z = multiply_m(rotation_z, rotate_y)
+            point_2d = multiply_m(projection_matrix, rotate_z)
         
-        
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_r]:
-            angle_y = angle_x = angle_z = 0
-        if keys[pygame.K_a]:
-            angle_y += ROTATE_SPEED
-        if keys[pygame.K_d]:
-            angle_y -= ROTATE_SPEED      
-        if keys[pygame.K_w]:
-            angle_x += ROTATE_SPEED
-        if keys[pygame.K_s]:
-            angle_x -= ROTATE_SPEED
-        if keys[pygame.K_q]:
-            angle_z -= ROTATE_SPEED
-        if keys[pygame.K_e]:
-            angle_z += ROTATE_SPEED      
-          
-    pygame.display.update()
+            x = (point_2d[0][0] * scale) + WINDOW_SIZE/2
+            y = (point_2d[1][0] * scale) + WINDOW_SIZE/2
+
+            points[i] = (x,y)
+            i += 1
+
+            r_x = 0
+            r_y = 0
+            try:
+                with open("angle.json", "r") as file:
+                    data = json.load(file)
+                    r_x = data["deviation_y"]
+                    r_y = data["deviation_x"]
+            except: pass
+
+            angle_x += r_x * 0.0006
+            angle_y += r_y * 0.0006
+
+            pygame.draw.circle(window, (255, 0, 0), (x, y), 5)
+
+        connect_points(0, 1, points)
+        connect_points(0, 3, points)
+        connect_points(0, 4, points)
+        connect_points(1, 2, points)
+        connect_points(1, 5, points)
+        connect_points(2, 6, points)
+        connect_points(2, 3, points)
+        connect_points(3, 7, points)
+        connect_points(4, 5, points)
+        connect_points(4, 7, points)
+        connect_points(6, 5, points)
+        connect_points(6, 7, points)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()   
+                exit()
+
+            # Retriving angle_x and angle_y from the JSON file
+            
+            
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_r]:
+                angle_y = angle_x = angle_z = 0
+            if keys[pygame.K_a]:
+                angle_y += ROTATE_SPEED
+            if keys[pygame.K_d]:
+                angle_y -= ROTATE_SPEED      
+            if keys[pygame.K_w]:
+                angle_x += ROTATE_SPEED
+            if keys[pygame.K_s]:
+                angle_x -= ROTATE_SPEED
+            if keys[pygame.K_q]:
+                angle_z -= ROTATE_SPEED
+            if keys[pygame.K_e]:
+                angle_z += ROTATE_SPEED      
+            
+        pygame.display.update()
+
+
+if __name__ == "__main__":
+    CubeMain = threading.Thread(target=CubeMain)
+    CubeMain.start()
+    CordReader1.CordReaderMain()
