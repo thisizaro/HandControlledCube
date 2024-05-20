@@ -48,11 +48,8 @@ Welcome to HandControlledCube! This repository contains code for a simple 3D cub
 
 ### Contributors:
 
-- [Your Name](https://github.com/your-username)
-
-### License:
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- [Aranya Dutta](https://github.com/thisizaro)
+- [ittou-shura](https://github.com/ittou-shura)
 
 ### Acknowledgments:
 
